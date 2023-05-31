@@ -21,15 +21,22 @@ public:
     int size() const;
     std::vector<int> getElements() const;
 
+
+    // ------------------ tidy -------------------
+    MagicalContainer(const MagicalContainer& other) = default;
+    MagicalContainer& operator=(const MagicalContainer& other) = default;
+    MagicalContainer(MagicalContainer&& other) = default;
+    MagicalContainer& operator=(MagicalContainer&& other) = default;
+
     class AscendingIterator {
     public:
         const MagicalContainer& container;
-        int index;
+        std::vector<int>::size_type index;
 
         AscendingIterator(const MagicalContainer& container): container(container), index(0){
             
         }   
-        AscendingIterator(const AscendingIterator& other): container(other.container){}
+        AscendingIterator(const AscendingIterator& other): container(other.container), index(other.index){}
         ~AscendingIterator() = default;
 
         AscendingIterator begin() const{
@@ -62,16 +69,24 @@ public:
             return container.mysticalElements[static_cast<std::vector<int>::size_type>(index)];
 
         }
+
+
+        // ------------------ tidy -------------------
+
+        AscendingIterator& operator=(const AscendingIterator& other) = delete;
+        AscendingIterator(AscendingIterator&& other) = default;
+        AscendingIterator& operator=(AscendingIterator&& other) = delete;
+
     };
 
     class PrimeIterator {
     private:
         const MagicalContainer& container;
-        int index;
+        std::vector<int>::size_type index;
 
     public:
         PrimeIterator(const MagicalContainer& container): container(container), index(0){}
-        PrimeIterator(const AscendingIterator& other) : container(other.container){}
+        PrimeIterator(const PrimeIterator& other) : container(other.container), index(other.index){}
         ~PrimeIterator() = default;
 
         PrimeIterator begin() const{
@@ -103,16 +118,22 @@ public:
         int operator*() const{
             return container.mysticalElements[static_cast<std::vector<int>::size_type>(index)];
         }
+
+        // ------------------ tidy -------------------
+
+        PrimeIterator& operator=(const PrimeIterator& other) = delete;
+        PrimeIterator(PrimeIterator&& other) = default;
+        PrimeIterator& operator=(PrimeIterator&& other) = delete;
     };
 
     class SideCrossIterator {
     private:
         const MagicalContainer& container;
-        int index;
+        std::vector<int>::size_type index;
 
     public:
         SideCrossIterator(const MagicalContainer& container) : container(container), index(0){}
-        SideCrossIterator(const AscendingIterator& other) : container(other.container){}
+        SideCrossIterator(const SideCrossIterator& other) : container(other.container), index(other.index){}
         ~SideCrossIterator() = default;
 
         SideCrossIterator begin() const{
@@ -143,6 +164,12 @@ public:
         int operator*() const{
             return container.mysticalElements[static_cast<std::vector<int>::size_type>(index)];
         }
+
+        // ------------------ tidy -------------------
+
+        SideCrossIterator& operator=(const SideCrossIterator& other) = delete;
+        SideCrossIterator(SideCrossIterator&& other) = default;
+        SideCrossIterator& operator=(SideCrossIterator&& other) = delete;
     };
 };
 
