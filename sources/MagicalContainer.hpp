@@ -7,19 +7,27 @@
 using namespace std;
 namespace ariel{};
 
+
+// Starting with the magicalContainer class which includes the iterators
 class MagicalContainer {
 private:
     std::vector<int> mysticalElements;
+    std::vector<int*> primeElements; // will be soon explained
 
 public:
     MagicalContainer() = default;
     ~MagicalContainer() = default;
+
 
     void addElement(int element);
     void removeElement(int element);
 
     int size() const;
     std::vector<int> getElements() const;
+
+    bool isPrime(int number);
+
+    
 
 
     // ------------------ tidy -------------------
@@ -28,52 +36,55 @@ public:
     MagicalContainer(MagicalContainer&& other) = default;
     MagicalContainer& operator=(MagicalContainer&& other) = default;
 
+
+    // 4 6 2 8 3 8 0 1 -> 0 1 2 3 4  6 8
     class AscendingIterator {
     public:
-        const MagicalContainer& container;
-        std::vector<int>::size_type index;
+        MagicalContainer& container;
+        std::vector<int>::size_type index; // current place
 
-        AscendingIterator(const MagicalContainer& container): container(container), index(0){
-            
-        }   
-        AscendingIterator(const AscendingIterator& other): container(other.container), index(other.index){}
-        ~AscendingIterator() = default;
+        AscendingIterator(MagicalContainer& container): container(container), index(0){} // constructor
+        
+        AscendingIterator(const AscendingIterator& other): container(other.container), index(other.index){} // copy
+        ~AscendingIterator() = default; // destructor
 
-        AscendingIterator begin() const{
-            return AscendingIterator(container);
-        }
-        AscendingIterator end() const{
-            AscendingIterator iterator(container);
-            iterator.index = container.mysticalElements.size();
-            return iterator;
-        }
-        AscendingIterator& operator++(){
-            index++;
-            return *this;
+        // Constructor
+        AscendingIterator(MagicalContainer& container, size_t index) : container(container), index(index) {
+            if (index > container.mysticalElements.size()) {
+                throw invalid_argument("Index out of bound");
+            }
         }
 
-        bool operator==(const AscendingIterator& other) const{
-            return this->index == other.index;
-        }
-        bool operator!=(const AscendingIterator& other) const{
-            return this ->index != other.index;
-        }
-        bool operator>(const AscendingIterator& other) const{
-            return this ->index > other.index;
-        }
-        bool operator<(const AscendingIterator& other) const{
-            return this ->index < other.index;
-        }
+        // returns first number in the container
+        AscendingIterator begin() const;
 
-        int operator*() const{ 
-            return container.mysticalElements[static_cast<std::vector<int>::size_type>(index)];
+        // returns the end of the container
+        AscendingIterator end() const;
 
-        }
+        // if hasn't reached the end go to the next element
+        AscendingIterator& operator++();
+
+        // assigns the iterator to another iterator.
+        AscendingIterator& operator=(const AscendingIterator& other);
+
+
+        // returns the value of the element we're at
+        int operator*() const;
+
+        // compares 2 iterators
+        bool operator==(const AscendingIterator& other) const;
+
+        bool operator!=(const AscendingIterator& other) const;
+        
+        bool operator>(const AscendingIterator& other) const;
+        
+        bool operator<(const AscendingIterator& other) const;
+        
+
 
 
         // ------------------ tidy -------------------
 
-        AscendingIterator& operator=(const AscendingIterator& other) = delete;
         AscendingIterator(AscendingIterator&& other) = default;
         AscendingIterator& operator=(AscendingIterator&& other) = delete;
 
@@ -81,93 +92,93 @@ public:
 
     class PrimeIterator {
     private:
-        const MagicalContainer& container;
+        MagicalContainer& container;
         std::vector<int>::size_type index;
 
     public:
-        PrimeIterator(const MagicalContainer& container): container(container), index(0){}
+        PrimeIterator(MagicalContainer& container): container(container), index(0){}
         PrimeIterator(const PrimeIterator& other) : container(other.container), index(other.index){}
-        ~PrimeIterator() = default;
+        ~PrimeIterator() = default; // destructor
 
-        PrimeIterator begin() const{
-            return PrimeIterator(container);
-        }
-        PrimeIterator end() const{
-            PrimeIterator iterator(container);
-            iterator.index = container.mysticalElements.size();
-            return iterator;
-        }
-        PrimeIterator& operator++(){
-            index++;
-            return *this;
+        // Constructor
+        PrimeIterator(MagicalContainer& container, size_t index) : container(container), index(index) {
+            if (index > container.mysticalElements.size()) {
+                throw invalid_argument("Index out of bound");
+            }
         }
 
-        bool operator==(const PrimeIterator& other) const{
-            return this->index == other.index;
-        }
-        bool operator!=(const PrimeIterator& other) const{
-            return this ->index != other.index;
-        }
-        bool operator>(const PrimeIterator& other) const{
-            return this ->index > other.index;
-        }
-        bool operator<(const PrimeIterator& other) const{
-            return this ->index < other.index;
-        }
+        // Uses default constructor -> index = 0
+        PrimeIterator begin() const;
 
-        int operator*() const{
-            return container.mysticalElements[static_cast<std::vector<int>::size_type>(index)];
-        }
+        // Note that we're looking at the end of the primeElements vector here
+        PrimeIterator end() const;
+
+        // Moves to the next prime in container
+        PrimeIterator& operator++();
+
+        // Assigns the iterator to another one
+        PrimeIterator& operator=(const PrimeIterator& other);
+
+        // returns the value of number in that index(need to use * as it's a vectors of pointers)
+        int operator*() const;
+
+        //
+        bool operator==(const PrimeIterator& other) const;
+
+        bool operator!=(const PrimeIterator& other) const;
+
+        bool operator>(const PrimeIterator& other) const;
+        bool operator<(const PrimeIterator& other) const;
+
 
         // ------------------ tidy -------------------
 
-        PrimeIterator& operator=(const PrimeIterator& other) = delete;
         PrimeIterator(PrimeIterator&& other) = default;
         PrimeIterator& operator=(PrimeIterator&& other) = delete;
     };
 
     class SideCrossIterator {
     private:
-        const MagicalContainer& container;
+        MagicalContainer& container;
+        // Normal index is in a way to count number of steps, sideIndex for current location
         std::vector<int>::size_type index;
+        std::vector<int>::size_type sideindex;
+
 
     public:
-        SideCrossIterator(const MagicalContainer& container) : container(container), index(0){}
-        SideCrossIterator(const SideCrossIterator& other) : container(other.container), index(other.index){}
+        SideCrossIterator(MagicalContainer& container) : container(container), index(0), sideindex(0){}
+        SideCrossIterator(const SideCrossIterator& other) : container(other.container), index(other.index), sideindex(other.sideindex){}
         ~SideCrossIterator() = default;
 
-        SideCrossIterator begin() const{
-            return SideCrossIterator(container);
-        }
-        SideCrossIterator end() const{
-            SideCrossIterator iterator(container);
-            iterator.index = container.mysticalElements.size();
-            return iterator;
-        }
-        SideCrossIterator& operator++(){
-            index++;
-            return *this;
+        SideCrossIterator(MagicalContainer& container, size_t index) : container(container), index(index), sideindex(0) {
+            if (index > container.mysticalElements.size()) {
+                throw invalid_argument("Index out of bound");
+            }
         }
 
-        bool operator==(const SideCrossIterator& other) const{
-            return this->index == other.index;
-        }
-        bool operator!=(const SideCrossIterator& other) const{
-            return this ->index != other.index;
-        }
-        bool operator>(const SideCrossIterator& other) const{
-            return this ->index > other.index;
-        }
-        bool operator<(const SideCrossIterator& other) const{
-            return this ->index < other.index;
-        }
-        int operator*() const{
-            return container.mysticalElements[static_cast<std::vector<int>::size_type>(index)];
-        }
+        SideCrossIterator begin() const;
+
+        SideCrossIterator end() const;
+
+        SideCrossIterator& operator++();
+        
+
+        SideCrossIterator& operator=(const SideCrossIterator& other);
+
+        // Note that we're returning the specialIndex used
+        int operator*() const;
+        
+        bool operator==(const SideCrossIterator& other) const;
+
+        bool operator!=(const SideCrossIterator& other) const;
+
+        bool operator>(const SideCrossIterator& other) const;
+
+        bool operator<(const SideCrossIterator& other) const;
+        
 
         // ------------------ tidy -------------------
 
-        SideCrossIterator& operator=(const SideCrossIterator& other) = delete;
         SideCrossIterator(SideCrossIterator&& other) = default;
         SideCrossIterator& operator=(SideCrossIterator&& other) = delete;
     };
